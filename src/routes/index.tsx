@@ -103,8 +103,8 @@ function Home() {
         </aside>
       )}
 
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur-xl md:px-6">
+      <div className="flex h-screen min-h-0 min-w-0 flex-1 flex-col">
+        <header className="z-10 flex shrink-0 items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur-xl md:px-6">
           <div className="flex min-w-0 items-center gap-2">
             {user && (
               <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
