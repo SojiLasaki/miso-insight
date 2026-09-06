@@ -57,7 +57,7 @@ export function ChatInterface({
     return () => {
       cancelled = true;
     };
-  }, [conversationId, authed, loadConversation]);
+  }, [conversationId, authed, loadConversation, onLatestResponse]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
