@@ -206,9 +206,13 @@ export async function runMisoRequest(
     ...parsed.output,
     include_api: parsed.output.include_api || wantsTechnical,
   };
+  const allowedKeys = new Set((source.parameters ?? []).map((p) => p.name));
   const parameters: Record<string, string> = Object.fromEntries(
-    Object.entries(parsed.parameters).filter(([, v]) => Boolean(v)),
+    Object.entries(parsed.parameters).filter(
+      ([k, v]) => Boolean(v) && allowedKeys.has(k),
+    ),
   ) as Record<string, string>;
+
 
   steps.push({
     label: "Source selected",
