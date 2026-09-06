@@ -16,11 +16,13 @@ export function ChatInterface({
   conversationId,
   onConversationStarted,
   onRequireAuth,
+  onLatestResponse,
 }: {
   authed: boolean;
   conversationId: string | null;
   onConversationStarted: (id: string) => void;
   onRequireAuth: (pendingQuestion: string) => void;
+  onLatestResponse?: (response: MisoResponse | null) => void;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [value, setValue] = useState("");
@@ -35,25 +37,27 @@ export function ChatInterface({
     let cancelled = false;
     if (!conversationId || !authed) {
       setMessages([]);
+      onLatestResponse?.(null);
       return;
     }
     loadConversation({ data: { id: conversationId } })
       .then((rows) => {
         if (cancelled) return;
-        setMessages(
-          rows.map((r) => ({
-            id: r.id,
-            role: r.role as "user" | "assistant",
-            content: r.content,
-            ...(r.payload ? { response: r.payload as unknown as MisoResponse } : {}),
-          })),
-        );
+        const mapped = rows.map((r) => ({
+          id: r.id,
+          role: r.role as "user" | "assistant",
+          content: r.content,
+          ...(r.payload ? { response: r.payload as unknown as MisoResponse } : {}),
+        }));
+        setMessages(mapped);
+        const last = [...mapped].reverse().find((m) => m.response)?.response ?? null;
+        onLatestResponse?.(last);
       })
       .catch(() => undefined);
     return () => {
       cancelled = true;
     };
-  }, [conversationId, authed, loadConversation]);
+  }, [conversationId, authed, loadConversation, onLatestResponse]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -81,6 +85,7 @@ export function ChatInterface({
         });
         if (!conversationId) onConversationStarted(result.conversation_id);
         setLastResponse(result.response);
+        onLatestResponse?.(result.response);
         setMessages((prev) => [
           ...prev,
           {
@@ -96,14 +101,14 @@ export function ChatInterface({
         setBusy(false);
       }
     },
-    [ask, authed, busy, conversationId, onConversationStarted, onRequireAuth],
+    [ask, authed, busy, conversationId, onConversationStarted, onRequireAuth, onLatestResponse],
   );
 
   const empty = messages.length === 0;
 
   if (empty) {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-5 pb-20 pt-10">
+      <div className="mx-auto flex w-full max-w-2xl min-h-0 flex-1 flex-col justify-center overflow-y-auto px-5 pb-20 pt-10">
         <div className="animate-rise text-center">
           <h2 className="text-[clamp(1.9rem,5vw,2.75rem)] font-medium leading-tight tracking-tight">
             What can I help you find?
@@ -128,8 +133,8 @@ export function ChatInterface({
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex-1 overflow-y-auto">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-2xl space-y-8 px-5 py-10">
           {messages.map((m) => (
             <Message

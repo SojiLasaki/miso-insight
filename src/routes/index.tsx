@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { Check, PanelLeft, Plus } from "lucide-react";
 
 import { ChatInterface } from "@/components/miso/ChatInterface";
+import { DetailsPanel } from "@/components/miso/DetailsPanel";
+import type { MisoResponse } from "@/lib/miso/types";
 import { History, type ConversationSummary } from "@/components/miso/History";
 import { PreferencesDialog } from "@/components/miso/PreferencesDialog";
 import { UserMenu } from "@/components/miso/UserMenu";
@@ -46,6 +48,7 @@ function Home() {
   const [misoConnected, setMisoConnected] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [latestResponse, setLatestResponse] = useState<MisoResponse | null>(null);
 
   const fetchList = useServerFn(listConversations);
   const fetchAccess = useServerFn(getMisoAccessStatus);
@@ -93,9 +96,9 @@ function Home() {
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-screen overflow-hidden bg-background">
       {user && (
-        <aside className="hidden w-[248px] shrink-0 border-r bg-sidebar md:block">
+        <aside className="hidden h-screen w-[248px] shrink-0 overflow-hidden border-r bg-sidebar md:block">
           <div className="px-5 pt-5">
             <p className="text-[14.5px] font-medium tracking-tight">MISO AI</p>
           </div>
@@ -103,8 +106,8 @@ function Home() {
         </aside>
       )}
 
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur-xl md:px-6">
+      <div className="flex h-screen min-h-0 min-w-0 flex-1 flex-col">
+        <header className="z-10 flex shrink-0 items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur-xl md:px-6">
           <div className="flex min-w-0 items-center gap-2">
             {user && (
               <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -160,16 +163,26 @@ function Home() {
           </div>
         </header>
 
-        <ChatInterface
-          authed={Boolean(user)}
-          conversationId={conversationId}
-          onConversationStarted={(id) => {
-            setConversationId(id);
-            refresh();
-          }}
-          onRequireAuth={() => void navigate({ to: "/auth" })}
-        />
+        <div className="flex min-h-0 flex-1">
+          <ChatInterface
+            authed={Boolean(user)}
+            conversationId={conversationId}
+            onConversationStarted={(id) => {
+              setConversationId(id);
+              refresh();
+            }}
+            onRequireAuth={() => void navigate({ to: "/auth" })}
+            onLatestResponse={setLatestResponse}
+          />
+
+          {latestResponse && (
+            <aside className="hidden w-[320px] shrink-0 overflow-y-auto border-l bg-card/40 px-5 py-6 lg:block">
+              <DetailsPanel response={latestResponse} />
+            </aside>
+          )}
+        </div>
       </div>
+
 
       <PreferencesDialog open={prefsOpen} onOpenChange={setPrefsOpen} />
     </div>
