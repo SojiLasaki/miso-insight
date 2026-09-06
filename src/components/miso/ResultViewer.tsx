@@ -116,10 +116,12 @@ export function ResultViewer({
         </p>
       )}
 
-      <ExecutionTimeline
-        steps={response.execution.steps}
-        durationMs={response.execution.duration_ms}
-      />
+      <div className="lg:hidden">
+        <ExecutionTimeline
+          steps={response.execution.steps}
+          durationMs={response.execution.duration_ms}
+        />
+      </div>
     </div>
   );
 }
