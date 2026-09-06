@@ -47,6 +47,7 @@ function Home() {
   const [misoConnected, setMisoConnected] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [latestResponse, setLatestResponse] = useState<MisoResponse | null>(null);
 
   const fetchList = useServerFn(listConversations);
   const fetchAccess = useServerFn(getMisoAccessStatus);
