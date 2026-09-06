@@ -37,19 +37,21 @@ export function ChatInterface({
     let cancelled = false;
     if (!conversationId || !authed) {
       setMessages([]);
+      onLatestResponse?.(null);
       return;
     }
     loadConversation({ data: { id: conversationId } })
       .then((rows) => {
         if (cancelled) return;
-        setMessages(
-          rows.map((r) => ({
-            id: r.id,
-            role: r.role as "user" | "assistant",
-            content: r.content,
-            ...(r.payload ? { response: r.payload as unknown as MisoResponse } : {}),
-          })),
-        );
+        const mapped = rows.map((r) => ({
+          id: r.id,
+          role: r.role as "user" | "assistant",
+          content: r.content,
+          ...(r.payload ? { response: r.payload as unknown as MisoResponse } : {}),
+        }));
+        setMessages(mapped);
+        const last = [...mapped].reverse().find((m) => m.response)?.response ?? null;
+        onLatestResponse?.(last);
       })
       .catch(() => undefined);
     return () => {
