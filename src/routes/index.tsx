@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Check, PanelLeft, Plus } from "lucide-react";
 
 import { ChatInterface } from "@/components/miso/ChatInterface";
+import { DetailsPanel } from "@/components/miso/DetailsPanel";
 import { History, type ConversationSummary } from "@/components/miso/History";
 import { PreferencesDialog } from "@/components/miso/PreferencesDialog";
 import { UserMenu } from "@/components/miso/UserMenu";
