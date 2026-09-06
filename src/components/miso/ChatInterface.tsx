@@ -101,7 +101,7 @@ export function ChatInterface({
         setBusy(false);
       }
     },
-    [ask, authed, busy, conversationId, onConversationStarted, onRequireAuth],
+    [ask, authed, busy, conversationId, onConversationStarted, onRequireAuth, onLatestResponse],
   );
 
   const empty = messages.length === 0;
