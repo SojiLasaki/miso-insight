@@ -160,16 +160,26 @@ function Home() {
           </div>
         </header>
 
-        <ChatInterface
-          authed={Boolean(user)}
-          conversationId={conversationId}
-          onConversationStarted={(id) => {
-            setConversationId(id);
-            refresh();
-          }}
-          onRequireAuth={() => void navigate({ to: "/auth" })}
-        />
+        <div className="flex min-h-0 flex-1">
+          <ChatInterface
+            authed={Boolean(user)}
+            conversationId={conversationId}
+            onConversationStarted={(id) => {
+              setConversationId(id);
+              refresh();
+            }}
+            onRequireAuth={() => void navigate({ to: "/auth" })}
+            onLatestResponse={setLatestResponse}
+          />
+
+          {latestResponse && (
+            <aside className="hidden w-[320px] shrink-0 overflow-y-auto border-l bg-card/40 px-5 py-6 lg:block">
+              <DetailsPanel response={latestResponse} />
+            </aside>
+          )}
+        </div>
       </div>
+
 
       <PreferencesDialog open={prefsOpen} onOpenChange={setPrefsOpen} />
     </div>
