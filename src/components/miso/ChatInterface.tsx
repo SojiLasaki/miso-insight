@@ -85,6 +85,7 @@ export function ChatInterface({
         });
         if (!conversationId) onConversationStarted(result.conversation_id);
         setLastResponse(result.response);
+        onLatestResponse?.(result.response);
         setMessages((prev) => [
           ...prev,
           {
