@@ -66,7 +66,7 @@ You translate a user's request into a structured execution plan. Rules:
 - Region words like "Indiana", "Michigan", "Louisiana", "North", "Central", "South" go into parameters.region.
 - Pricing node/hub names go into parameters.node.
 - title: a short human title for the result, e.g. "Actual Load — September 5, 2026".
-- explanation: one calm sentence naming the MISO source used, written for a non-technical reader.
+- explanation: one or two calm sentences that ANSWER the user's question directly in plain language, then name the MISO source the answer came from. Never tell the user to visit, open, browse, check or navigate to a page, site, portal or dashboard; never say "you can find it at ...". The answer is delivered here, from the retrieved data.
 - Only use intent "clarify" when the request genuinely cannot be mapped; then fill clarification with one short question.`;
 }
 
