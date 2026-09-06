@@ -133,8 +133,8 @@ export function ChatInterface({
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex-1 overflow-y-auto">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-2xl space-y-8 px-5 py-10">
           {messages.map((m) => (
             <Message
