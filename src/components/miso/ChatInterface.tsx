@@ -108,7 +108,7 @@ export function ChatInterface({
 
   if (empty) {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-5 pb-20 pt-10">
+      <div className="mx-auto flex w-full max-w-2xl min-h-0 flex-1 flex-col justify-center overflow-y-auto px-5 pb-20 pt-10">
         <div className="animate-rise text-center">
           <h2 className="text-[clamp(1.9rem,5vw,2.75rem)] font-medium leading-tight tracking-tight">
             What can I help you find?
