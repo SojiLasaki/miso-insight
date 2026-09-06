@@ -224,9 +224,21 @@ export async function runMisoRequest(
     };
   }
 
+  // Sensible defaults before validation: a single-day request only needs one date.
+  if (parameters["start_date"] && !parameters["end_date"]) {
+    parameters["end_date"] = parameters["start_date"];
+  }
+  if (parameters["end_date"] && !parameters["start_date"]) {
+    parameters["start_date"] = parameters["end_date"];
+  }
+  if (parameters["report_date"] && !parameters["start_date"]) {
+    parameters["start_date"] = parameters["report_date"];
+  }
+
   // Parameter validation against the registry
   const required = (source.parameters ?? []).filter((p) => p.required);
   const missing = required.filter((p) => !parameters[p.name]).map((p) => p.name);
+
 
   if (missing.length) {
     steps.push({
