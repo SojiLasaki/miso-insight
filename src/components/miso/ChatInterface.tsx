@@ -16,11 +16,13 @@ export function ChatInterface({
   conversationId,
   onConversationStarted,
   onRequireAuth,
+  onLatestResponse,
 }: {
   authed: boolean;
   conversationId: string | null;
   onConversationStarted: (id: string) => void;
   onRequireAuth: (pendingQuestion: string) => void;
+  onLatestResponse?: (response: MisoResponse | null) => void;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [value, setValue] = useState("");
