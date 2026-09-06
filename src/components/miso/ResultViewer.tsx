@@ -30,10 +30,12 @@ export function ResultViewer({
             : {})}
           {...(onEdit ? { onEdit } : {})}
         />
-        <ExecutionTimeline
-          steps={response.execution.steps}
-          durationMs={response.execution.duration_ms}
-        />
+        <div className="lg:hidden">
+          <ExecutionTimeline
+            steps={response.execution.steps}
+            durationMs={response.execution.duration_ms}
+          />
+        </div>
       </div>
     );
   }
