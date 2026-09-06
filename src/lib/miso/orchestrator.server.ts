@@ -198,7 +198,14 @@ export async function runMisoRequest(
   }
 
   const source = getSource(parsed.source_id) ?? MISO_SOURCES[0]!;
-  const output: OutputPlan = parsed.output;
+  const wantsTechnical =
+    /\b(api|endpoint|request|curl|python|javascript|code|parameters?)\b/i.test(question) ||
+    /how (did |do )?you (retriev|get|find|fetch|pull)/i.test(question) ||
+    /show me how/i.test(question);
+  const output: OutputPlan = {
+    ...parsed.output,
+    include_api: parsed.output.include_api || wantsTechnical,
+  };
   const parameters: Record<string, string> = Object.fromEntries(
     Object.entries(parsed.parameters).filter(([, v]) => Boolean(v)),
   ) as Record<string, string>;
@@ -348,7 +355,7 @@ export async function runMisoRequest(
       execution: { status: "success", steps, duration_ms: Date.now() - startedAt },
       output,
       title: parsed.title,
-      answer: metrics.length ? `${metrics[0]!.label} ${metrics[0]!.value.toLowerCase()}` : "",
+      answer: metrics.length ? `${metrics[0]!.label} ${metrics[0]!.value}` : "",
       explanation: parsed.explanation,
       metrics,
       data,
