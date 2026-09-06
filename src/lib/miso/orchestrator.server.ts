@@ -78,6 +78,7 @@ async function plan(question: string, history: string[]): Promise<MisoPlan> {
     name: "lovable",
     baseURL: "https://ai.gateway.lovable.dev/v1",
     headers: { "Lovable-API-Key": apiKey },
+    supportsStructuredOutputs: true,
   });
 
   const result = await generateText({
@@ -197,10 +198,21 @@ export async function runMisoRequest(
   }
 
   const source = getSource(parsed.source_id) ?? MISO_SOURCES[0]!;
-  const output: OutputPlan = parsed.output;
+  const wantsTechnical =
+    /\b(api|endpoint|request|curl|python|javascript|code|parameters?)\b/i.test(question) ||
+    /how (did |do )?you (retriev|get|find|fetch|pull)/i.test(question) ||
+    /show me how/i.test(question);
+  const output: OutputPlan = {
+    ...parsed.output,
+    include_api: parsed.output.include_api || wantsTechnical,
+  };
+  const allowedKeys = new Set((source.parameters ?? []).map((p) => p.name));
   const parameters: Record<string, string> = Object.fromEntries(
-    Object.entries(parsed.parameters).filter(([, v]) => Boolean(v)),
+    Object.entries(parsed.parameters).filter(
+      ([k, v]) => Boolean(v) && allowedKeys.has(k),
+    ),
   ) as Record<string, string>;
+
 
   steps.push({
     label: "Source selected",
@@ -223,9 +235,21 @@ export async function runMisoRequest(
     };
   }
 
+  // Sensible defaults before validation: a single-day request only needs one date.
+  if (parameters["start_date"] && !parameters["end_date"]) {
+    parameters["end_date"] = parameters["start_date"];
+  }
+  if (parameters["end_date"] && !parameters["start_date"]) {
+    parameters["start_date"] = parameters["end_date"];
+  }
+  if (parameters["report_date"] && !parameters["start_date"]) {
+    parameters["start_date"] = parameters["report_date"];
+  }
+
   // Parameter validation against the registry
   const required = (source.parameters ?? []).filter((p) => p.required);
   const missing = required.filter((p) => !parameters[p.name]).map((p) => p.name);
+
 
   if (missing.length) {
     steps.push({
@@ -335,7 +359,7 @@ export async function runMisoRequest(
       execution: { status: "success", steps, duration_ms: Date.now() - startedAt },
       output,
       title: parsed.title,
-      answer: metrics.length ? `${metrics[0]!.label} ${metrics[0]!.value.toLowerCase()}` : "",
+      answer: metrics.length ? `${metrics[0]!.label} ${metrics[0]!.value}` : "",
       explanation: parsed.explanation,
       metrics,
       data,
