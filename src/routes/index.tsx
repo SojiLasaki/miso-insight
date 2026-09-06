@@ -93,9 +93,9 @@ function Home() {
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-screen overflow-hidden bg-background">
       {user && (
-        <aside className="hidden w-[248px] shrink-0 border-r bg-sidebar md:block">
+        <aside className="hidden h-screen w-[248px] shrink-0 overflow-hidden border-r bg-sidebar md:block">
           <div className="px-5 pt-5">
             <p className="text-[14.5px] font-medium tracking-tight">MISO AI</p>
           </div>
